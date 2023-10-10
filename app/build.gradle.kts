@@ -5,6 +5,17 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            if (project.hasProperty("MYAPP_RELEASE_STORE_FILE")) {
+                storeFile = file(project.findProperty("MYAPP_RELEASE_STORE_FILE"))
+                storePassword = project.findProperty("MYAPP_RELEASE_STORE_PASSWORD") as String
+                keyAlias = project.findProperty("MYAPP_RELEASE_KEY_ALIAS") as String
+                keyPassword = project.findProperty("MYAPP_RELEASE_KEY_PASSWORD") as String
+            }
+        }
+    }
+
     namespace = "tiv.edo.cyberobics"
     compileSdk = 34
 
@@ -27,6 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
