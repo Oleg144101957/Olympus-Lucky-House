@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283360117735",
+    "project_id": "olympus-lucky-house",
+    "storage_bucket": "olympus-lucky-house.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283360117735:android:d611f56318d3e1aa163342",
+        "android_client_info": {
+          "package_name": "tiv.edo.cyberobics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnx9OswPF4b7zMQvJb5y5untNItq6YeRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
