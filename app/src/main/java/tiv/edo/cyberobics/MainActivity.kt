@@ -1,11 +1,13 @@
 package tiv.edo.cyberobics
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,7 +42,6 @@ class MainActivity : ComponentActivity() {
     private fun startWork(){
         if (isNetworkAvailable(this)){
             addGeneralDataObservers()
-            requestData()
 
             val apps = AppsRepositoryImpl(this)
             val gaid = GaidRepositoryImpl(this)
@@ -74,15 +75,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun addGeneralDataObservers(){
+
+        val intentToTheAdditionalActivity = Intent(this, AdditionalActivity::class.java)
+
         OlympusApp.generalAppState.observe(this){
-            Log.d("123123", "The data in flow is $it")
+
+            if (it.facebook != OlympConstants.initial_data && it.gaid != OlympConstants.initial_data && it.apps != null ){
+                startActivity(intentToTheAdditionalActivity)
+            }
+
         }
-    }
-
-    private fun requestData(){
-
-
-
     }
 
 
@@ -94,7 +96,11 @@ class MainActivity : ComponentActivity() {
             NetworkCapabilities.TRANSPORT_CELLULAR)
     }
 
-    override fun onBackPressed() {
-        //off
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 }

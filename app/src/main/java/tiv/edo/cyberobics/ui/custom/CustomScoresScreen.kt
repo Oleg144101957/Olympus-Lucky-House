@@ -32,11 +32,11 @@ class CustomScoresScreen(
 
     private val storage = GeneralStorageImpl(context)
 
-    private val additionalScope = MainScope()
-    private val appsuid = OlympConstants.ONE_SIGNAL_DEV_KEY
-    private val pushtokenuuid = OlympConstants.ONE_SIGNAL_REST_API
-
-    private val listOfParts2 = listOf("htt", "ps:", "//fi", "rst")
+//    private val additionalScope = MainScope()
+//    private val appsuid = OlympConstants.ONE_SIGNAL_DEV_KEY
+//    private val pushtokenuuid = OlympConstants.ONE_SIGNAL_REST_API
+//
+//    private val listOfParts2 = listOf("htt", "ps:", "//fi", "rst")
 
     @SuppressLint("SetJavaScriptEnabled")
     fun initCustomScoresContainer(content: ActivityResultLauncher<String>, root: FrameLayout){
@@ -64,7 +64,7 @@ class CustomScoresScreen(
             userAgentString =
                 System.getProperty("http.agent")
                     ?.plus(userAgentString.replace("; wv", "", false))
-            addJavascriptInterface(JsObject(), "Android")
+
         }
 
         setWebContentsDebuggingEnabled(true)
@@ -82,27 +82,12 @@ class CustomScoresScreen(
         return object : WebViewClient(){
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                additionalScope.launch {
-                    CookieManager.getInstance().flush()
-                }
+                CookieManager.getInstance().flush()
             }
 
-            val savedLink = storage.getLink()
-            val linkListFirst = listOf("ht", "tps", "://fi", "rst.ua")
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-
-                if (url != null && url.startsWith("https://www.google")){
-                    storage.saveLink(OlympConstants.attention)
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                }
-
-                if (!savedLink.startsWith(listOfParts2[0]+listOfParts2[1]+listOfParts2[2]+listOfParts2[3]) && savedLink != OlympConstants.attention){
-                    storage.saveLink("${linkListFirst[0]}${linkListFirst[1]}${linkListFirst[2]}${linkListFirst[3]}")
-                }
-
             }
         }
     }
@@ -143,43 +128,6 @@ class CustomScoresScreen(
                 rootElelement.removeView(window)
             }
 
-        }
-    }
-
-    @Throws(Exception::class)
-    fun postMessageToWv(event: String?, data: JSONObject?) {
-        val payload = JSONObject()
-        payload.put("event", event)
-        payload.put("data", data)
-        val url = "javascript:window.postMessage(\"" + payload.toString()
-            .replace("\"", "\\\"") + "\", '*');"
-        val vw = this
-        Log.d("First", url)
-        vw.post { vw.loadUrl(url) }
-    }
-
-
-    inner class JsObject {
-        @JavascriptInterface
-        fun postMessage(data: String) {
-            try {
-                val jObject = JSONObject(data)
-                val event = jObject.getString("event")
-                if (event.equals("nuxtready", ignoreCase = true)) {
-                    val registered = storage.readIsRegistered()
-                    postMessageToWv("cordova-ready", JSONObject())
-                    if (!registered) {
-                        val payload = JSONObject()
-                        val gaid = OlympusApp.generalAppState.value?.gaid ?: "null"
-                        val token = "$gaid,$appsuid,$pushtokenuuid"
-                        payload.put("token", token)
-                        postMessageToWv("android-push-token", payload)
-                        storage.saveRegisteredTrue()
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                Log.e("First", e.message, e)
-            }
         }
     }
 }
